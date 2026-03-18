@@ -33,7 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
             //     fontWeight: FontWeight.w800,
             //   ),
             // ),
-            Image.asset("assets/jumia_logo.png", width: 200),
+            Image.asset("assets/logo.png", width: 200),
             Padding(
               padding: EdgeInsets.fromLTRB(25, 0, 20, 5),
               child: Row(

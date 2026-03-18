@@ -10,213 +10,136 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
+  Widget buildTextField(String label, String hint, IconData icon) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+        ),
+
+        const SizedBox(height: 6),
+
+        TextField(
+          decoration: InputDecoration(
+            hintText: hint,
+            prefixIcon: Icon(icon),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
+          ),
+        ),
+
+        const SizedBox(height: 20),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
 
-      body: Padding(
-        padding: EdgeInsets.all(8.0),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
 
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 40),
 
-          children: [
-            Image.asset("assets/jumia_logo.png", width: 200),
+                /// LOGO
+                Center(child: Image.asset("assets/logo.png", width: 200)),
 
-            /// FIRST NAME
-            Padding(
-              padding: EdgeInsets.fromLTRB(25, 0, 20, 5),
-              child: Row(
-                children: [
-                  Text(
-                    "First Name",
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-                  ),
-                ],
-              ),
-            ),
+                const SizedBox(height: 40),
 
-            Padding(
-              padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-              child: TextField(
-                decoration: InputDecoration(
-                  hint: Text("Enter First Name"),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  prefixIcon: Icon(Icons.person),
+                /// FIRST NAME
+                buildTextField("First Name", "Enter First Name", Icons.person),
+
+                /// SECOND NAME
+                buildTextField(
+                  "Second Name",
+                  "Enter Second Name",
+                  Icons.person_outline,
                 ),
-              ),
-            ),
 
-            SizedBox(height: 20),
-
-            /// SECOND NAME
-            Padding(
-              padding: EdgeInsets.fromLTRB(25, 0, 20, 5),
-              child: Row(
-                children: [
-                  Text(
-                    "Second Name",
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-                  ),
-                ],
-              ),
-            ),
-
-            Padding(
-              padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-              child: TextField(
-                decoration: InputDecoration(
-                  hint: Text("Enter Second Name"),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  prefixIcon: Icon(Icons.person_outline),
+                /// EMAIL
+                buildTextField(
+                  "Enter Email",
+                  "Email or Phone Number",
+                  Icons.email,
                 ),
-              ),
-            ),
 
-            SizedBox(height: 20),
+                /// PASSWORD
+                buildTextField("Enter Password", "Create Password", Icons.lock),
 
-            /// EMAIL
-            Padding(
-              padding: EdgeInsets.fromLTRB(25, 0, 20, 5),
-              child: Row(
-                children: [
-                  Text(
-                    "Enter Email",
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-                  ),
-                ],
-              ),
-            ),
-
-            Padding(
-              padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-              child: TextField(
-                decoration: InputDecoration(
-                  hint: Text("Email or Phone Number"),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  prefixIcon: Icon(Icons.email),
+                /// CONFIRM PASSWORD
+                buildTextField(
+                  "Confirm Password",
+                  "Re-enter Password",
+                  Icons.lock_outline,
                 ),
-              ),
-            ),
 
-            SizedBox(height: 20),
+                /// SIGNUP BUTTON
+                GestureDetector(
+                  onTap: () {
+                    Get.offAndToNamed("/homescreen");
+                  },
 
-            /// PASSWORD
-            Padding(
-              padding: EdgeInsets.fromLTRB(25, 0, 20, 5),
-              child: Row(
-                children: [
-                  Text(
-                    "Enter Password",
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-                  ),
-                ],
-              ),
-            ),
+                  child: Container(
+                    height: 50,
+                    width: double.infinity,
+                    alignment: Alignment.center,
 
-            Padding(
-              padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-              child: TextField(
-                decoration: InputDecoration(
-                  hint: Text("Create Password"),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  prefixIcon: Icon(Icons.lock),
-                ),
-              ),
-            ),
-
-            SizedBox(height: 20),
-
-            /// CONFIRM PASSWORD
-            Padding(
-              padding: EdgeInsets.fromLTRB(25, 0, 20, 5),
-              child: Row(
-                children: [
-                  Text(
-                    "Confirm Password",
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-                  ),
-                ],
-              ),
-            ),
-
-            Padding(
-              padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-              child: TextField(
-                decoration: InputDecoration(
-                  hint: Text("Re-enter Password"),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  prefixIcon: Icon(Icons.lock_outline),
-                ),
-              ),
-            ),
-
-            SizedBox(height: 20),
-
-            /// SIGNUP BUTTON
-            GestureDetector(
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-
-                child: Container(
-                  height: 50,
-                  width: double.infinity,
-                  alignment: Alignment.center,
-
-                  decoration: BoxDecoration(
-                    color: primaryColor,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-
-                  child: Text(
-                    "Sign Up",
-                    style: TextStyle(color: Colors.white, fontSize: 14),
-                  ),
-                ),
-              ),
-
-              onTap: () {
-                Get.offAndToNamed("/homescreen");
-              },
-            ),
-
-            Padding(
-              padding: EdgeInsets.fromLTRB(0, 20, 30.0, 0),
-
-              child: Row(
-                children: [
-                  Spacer(),
-
-                  Text(
-                    "Already have an account? ",
-                    style: TextStyle(fontSize: 18),
-                  ),
-
-                  GestureDetector(
-                    child: Text(
-                      "Login",
-                      style: TextStyle(color: primaryColor, fontSize: 18),
+                    decoration: BoxDecoration(
+                      color: primaryColor,
+                      borderRadius: BorderRadius.circular(20),
                     ),
 
-                    onTap: () {
-                      Get.back();
-                    },
+                    child: const Text(
+                      "Sign Up",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
-                ],
-              ),
+                ),
+
+                const SizedBox(height: 25),
+
+                /// LOGIN LINK
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "Already have an account? ",
+                      style: TextStyle(fontSize: 16),
+                    ),
+
+                    GestureDetector(
+                      onTap: () {
+                        Get.back();
+                      },
+
+                      child: Text(
+                        "Login",
+                        style: TextStyle(
+                          color: primaryColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 30),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
