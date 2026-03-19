@@ -1,6 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:new_project/configs/colors.dart';
 import 'package:get/get.dart';
+import 'package:new_project/configs/colors.dart';
+import 'package:new_project/controllers/signupcontroller.dart';
+
+SignupController signupController = Get.put(SignupController());
+
+TextEditingController firstNameController = TextEditingController();
+TextEditingController secondNameController = TextEditingController();
+TextEditingController emailController = TextEditingController();
+TextEditingController passwordController = TextEditingController();
+TextEditingController confirmPasswordController = TextEditingController();
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -10,135 +19,168 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
-  Widget buildTextField(String label, String hint, IconData icon) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-        ),
-
-        const SizedBox(height: 6),
-
-        TextField(
-          decoration: InputDecoration(
-            hintText: hint,
-            prefixIcon: Icon(icon),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
-          ),
-        ),
-
-        const SizedBox(height: 20),
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
 
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+      body: Padding(
+        padding: EdgeInsets.all(8.0),
 
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 40),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            /// LOGO
+            Image.asset("assets/logo.png", width: 200),
 
-                /// LOGO
-                Center(child: Image.asset("assets/logo.png", width: 200)),
+            /// FIRST NAME
+            label("Enter First Name"),
+            inputField(firstNameController, "First Name", Icons.person),
 
-                const SizedBox(height: 40),
+            /// SECOND NAME
+            label("Enter Second Name"),
+            inputField(
+              secondNameController,
+              "Second Name",
+              Icons.person_outline,
+            ),
 
-                /// FIRST NAME
-                buildTextField("First Name", "Enter First Name", Icons.person),
+            /// EMAIL
+            label("Enter Email"),
+            inputField(emailController, "Email", Icons.email),
 
-                /// SECOND NAME
-                buildTextField(
-                  "Second Name",
-                  "Enter Second Name",
-                  Icons.person_outline,
-                ),
+            /// PASSWORD
+            label("Enter Password"),
+            Obx(
+              () => passwordField(
+                passwordController,
+                signupController.passwordVisible.value,
+                signupController.togglePassword,
+              ),
+            ),
 
-                /// EMAIL
-                buildTextField(
-                  "Enter Email",
-                  "Email or Phone Number",
-                  Icons.email,
-                ),
+            /// CONFIRM PASSWORD
+            label("Confirm Password"),
+            Obx(
+              () => passwordField(
+                confirmPasswordController,
+                signupController.confirmPasswordVisible.value,
+                signupController.toggleConfirmPassword,
+              ),
+            ),
 
-                /// PASSWORD
-                buildTextField("Enter Password", "Create Password", Icons.lock),
+            SizedBox(height: 20),
 
-                /// CONFIRM PASSWORD
-                buildTextField(
-                  "Confirm Password",
-                  "Re-enter Password",
-                  Icons.lock_outline,
-                ),
-
-                /// SIGNUP BUTTON
-                GestureDetector(
-                  onTap: () {
-                    Get.offAndToNamed("/homescreen");
-                  },
-
-                  child: Container(
-                    height: 50,
-                    width: double.infinity,
-                    alignment: Alignment.center,
-
-                    decoration: BoxDecoration(
-                      color: primaryColor,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-
-                    child: const Text(
-                      "Sign Up",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+            /// SIGNUP BUTTON
+            GestureDetector(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                child: Container(
+                  height: 50,
+                  width: double.infinity,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: primaryColor,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    "Sign Up",
+                    style: TextStyle(color: Colors.white, fontSize: 14),
                   ),
                 ),
+              ),
+              onTap: () {
+                bool success = signupController.signup(
+                  firstNameController.text,
+                  secondNameController.text,
+                  emailController.text,
+                  passwordController.text,
+                  confirmPasswordController.text,
+                );
 
-                const SizedBox(height: 25),
-
-                /// LOGIN LINK
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      "Already have an account? ",
-                      style: TextStyle(fontSize: 16),
-                    ),
-
-                    GestureDetector(
-                      onTap: () {
-                        Get.back();
-                      },
-
-                      child: Text(
-                        "Login",
-                        style: TextStyle(
-                          color: primaryColor,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 30),
-              ],
+                if (success) {
+                  Get.offAndToNamed("/homescreen");
+                } else {
+                  Get.snackbar(
+                    "Signup Failed",
+                    "Fill all fields & ensure passwords match",
+                  );
+                }
+              },
             ),
+
+            /// LOGIN LINK
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0, 20, 30.0, 0),
+              child: Row(
+                children: [
+                  Spacer(),
+                  Text(
+                    "Already have an account? ",
+                    style: TextStyle(fontSize: 18),
+                  ),
+                  GestureDetector(
+                    child: Text(
+                      "Login",
+                      style: TextStyle(color: primaryColor, fontSize: 18),
+                    ),
+                    onTap: () {
+                      Get.back();
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// LABEL
+  Widget label(String text) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(25, 0, 20, 5),
+      child: Row(
+        children: [
+          Text(
+            text,
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// NORMAL INPUT FIELD
+  Widget inputField(controller, hint, icon) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+      child: TextField(
+        controller: controller,
+        decoration: InputDecoration(
+          hint: Text(hint),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
+          prefixIcon: Icon(icon),
+        ),
+      ),
+    );
+  }
+
+  /// PASSWORD FIELD
+  Widget passwordField(controller, isVisible, toggle) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+      child: TextField(
+        controller: controller,
+        obscureText: isVisible,
+        decoration: InputDecoration(
+          hint: Text("Password"),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
+          prefixIcon: Icon(Icons.lock),
+          suffixIcon: GestureDetector(
+            child: Icon(isVisible ? Icons.visibility : Icons.visibility_off),
+            onTap: toggle,
           ),
         ),
       ),

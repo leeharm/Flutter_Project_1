@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:get/get_instance/src/extension_instance.dart';
+import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:new_project/configs/colors.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
+import 'package:new_project/controllers/logincontroller.dart';
+
+LoginController loginController = Get.put(LoginController());
+
+TextEditingController usernameController = TextEditingController();
+TextEditingController passwordController = TextEditingController();
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -49,6 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
               child: TextField(
+                controller: usernameController,
                 decoration: InputDecoration(
                   hint: Text("Email or Phone Number"),
                   border: OutlineInputBorder(
@@ -73,13 +82,29 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             Padding(
               padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-              child: TextField(
-                decoration: InputDecoration(
-                  hint: Text("PIN or Password"),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
+              child: Obx(
+                () => TextField(
+                  controller: passwordController,
+                  obscureText: loginController
+                      .passwordVisible
+                      .value, // This will hide the text being entered
+                  decoration: InputDecoration(
+                    hint: Text("PIN or Password"),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    prefixIcon: Icon(Icons.lock),
+                    suffixIcon: GestureDetector(
+                      child: Icon(
+                        loginController.passwordVisible.value
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                      ),
+                      onTap: () {
+                        loginController.togglePassword();
+                      },
+                    ),
                   ),
-                  prefixIcon: Icon(Icons.lock),
                 ),
               ),
             ),
@@ -103,7 +128,16 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               onTap: () {
-                Get.offAndToNamed("/homescreen");
+                bool success = loginController.login(
+                  usernameController.text,
+                  passwordController.text,
+                );
+                if (success) {
+                  Get.offAndToNamed("/homescreen");
+                } else {
+                  Get.snackbar("Login Failed", "Invalid username or password");
+                }
+                // Get.offAndToNamed("/homescreen");
               },
             ),
 
