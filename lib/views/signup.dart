@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:new_project/configs/colors.dart';
 import 'package:new_project/controllers/signupcontroller.dart';
+import 'package:http/http.dart' as http;
 
 SignupController signupController = Get.put(SignupController());
 
@@ -19,6 +20,27 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
+  Future signupUser() async {
+    var response = await http.post(
+      Uri.parse("http://127.0.0.1/signup.php"),
+      body: {
+        "first_name": firstNameController.text,
+        "second_name": secondNameController.text,
+        "email": emailController.text,
+        "password": passwordController.text,
+      },
+    );
+
+    if (response.body == "success") {
+      Get.snackbar("Success", "Account created");
+      Get.toNamed("/login");
+    } else if (response.body == "exists") {
+      Get.snackbar("Error", "User already exists");
+    } else {
+      Get.snackbar("Error", "Something went wrong");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -90,21 +112,10 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
               ),
               onTap: () {
-                bool success = signupController.signup(
-                  firstNameController.text,
-                  secondNameController.text,
-                  emailController.text,
-                  passwordController.text,
-                  confirmPasswordController.text,
-                );
-
-                if (success) {
-                  Get.offAndToNamed("/homescreen");
+                if (passwordController.text != confirmPasswordController.text) {
+                  Get.snackbar("Error", "Passwords do not match");
                 } else {
-                  Get.snackbar(
-                    "Signup Failed",
-                    "Fill all fields & ensure passwords match",
-                  );
+                  signupUser();
                 }
               },
             ),

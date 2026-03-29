@@ -5,6 +5,7 @@ import 'package:new_project/configs/colors.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:new_project/controllers/logincontroller.dart';
+import 'package:http/http.dart' as http;
 
 LoginController loginController = Get.put(LoginController());
 
@@ -19,6 +20,22 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  Future loginUser() async {
+    var response = await http.post(
+      Uri.parse("http://127.0.0.1/login.php"),
+      body: {
+        "email": usernameController.text,
+        "password": passwordController.text,
+      },
+    );
+
+    if (response.body == "success") {
+      Get.offAndToNamed("/homescreen");
+    } else {
+      Get.snackbar("Login Failed", "Invalid credentials");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -128,16 +145,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               onTap: () {
-                bool success = loginController.login(
-                  usernameController.text,
-                  passwordController.text,
-                );
-                if (success) {
-                  Get.offAndToNamed("/homescreen");
-                } else {
-                  Get.snackbar("Login Failed", "Invalid username or password");
-                }
-                // Get.offAndToNamed("/homescreen");
+                loginUser();
               },
             ),
 
