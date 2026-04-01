@@ -1,27 +1,49 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import '../controllers/logincontroller.dart';
 
 class Profile extends StatelessWidget {
-  const Profile({super.key});
+  Profile({super.key});
+
+  final LoginController loginController = Get.find();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Profile"), centerTitle: true),
+      appBar: AppBar(title: Text("Profile"), centerTitle: true),
 
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      body: Center(
+        child: Obx(
+          () => Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.person, size: 100),
 
-        children: const [
-          CircleAvatar(radius: 50, child: Icon(Icons.person, size: 50)),
+              SizedBox(height: 20),
 
-          SizedBox(height: 20),
+              Text(
+                "User ID: ${loginController.userId.value}",
+                style: TextStyle(fontSize: 18),
+              ),
 
-          Text("User Name", style: TextStyle(fontSize: 20)),
+              SizedBox(height: 10),
 
-          SizedBox(height: 10),
+              Text(
+                "Email: ${loginController.email.value}",
+                style: TextStyle(fontSize: 18),
+              ),
 
-          Text("user@email.com", style: TextStyle(color: Colors.grey)),
-        ],
+              SizedBox(height: 30),
+
+              ElevatedButton(
+                onPressed: () {
+                  Get.offAllNamed("/login");
+                },
+                child: Text("Logout"),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

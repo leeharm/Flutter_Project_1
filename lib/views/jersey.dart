@@ -1,55 +1,92 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
-class Jersey extends StatelessWidget {
+class Jersey extends StatefulWidget {
   const Jersey({super.key});
+
+  @override
+  State<Jersey> createState() => _JerseyState();
+}
+
+class _JerseyState extends State<Jersey> {
+  Future placeOrder(item) async {
+    var response = await http.post(
+      Uri.parse("http://127.0.0.1/order.php"),
+      body: {
+        "user_email": "test@gmail.com", // we improve this next
+        "jersey_name": item['name'],
+        "price": item['price'],
+      },
+    );
+
+    if (response.body == "success") {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Order placed successfully")));
+    } else {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Order failed")));
+    }
+  }
+
+  List jerseys = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchJerseys();
+  }
+
+  /// FETCH DATA FROM API
+  fetchJerseys() async {
+    var response = await http.get(
+      Uri.parse("http://127.0.0.1/jersey/get_jerseys.php"),
+    );
+
+    if (response.statusCode == 200) {
+      setState(() {
+        jerseys = json.decode(response.body);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Available Jerseys")),
+      appBar: AppBar(title: Text("Jerseys")),
 
-      body: GridView.count(
-        crossAxisCount: 2,
-        padding: const EdgeInsets.all(10),
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
+      body: jerseys.isEmpty
+          ? Center(child: CircularProgressIndicator())
+          : ListView.builder(
+              itemCount: jerseys.length,
+              itemBuilder: (context, index) {
+                var item = jerseys[index];
 
-        children: [
-          jerseyCard("JVC Jersey", "assets/jvc.png", "Ksh 3500"),
-          jerseyCard("Barcelona Jersey", "assets/ww.png", "Ksh 4000"),
-          jerseyCard("Rugby Jersey", "assets/rugby_1.png", "Ksh 3500"),
-          jerseyCard("Rugby Jersey", "assets/rugby_2.png", "Ksh 3800"),
-        ],
-      ),
-    );
-  }
+                return Card(
+                  margin: EdgeInsets.all(10),
+                  child: ListTile(
+                    leading: Image.network(
+                      "http://127.0.0.1/jersey/jersey_images/${item['image']}",
+                      width: 50,
+                      height: 50,
+                    ),
 
-  Widget jerseyCard(String name, String image, String price) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.grey),
-      ),
+                    title: Text(item['team']),
+                    subtitle: Text("Ksh ${item['price']}"),
 
-      child: Column(
-        children: [
-          Expanded(child: Image.asset(image, fit: BoxFit.cover)),
-
-          const SizedBox(height: 5),
-
-          Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
-
-          Text(
-            price,
-            style: const TextStyle(
-              color: Colors.blue,
-              fontWeight: FontWeight.bold,
+                    trailing: ElevatedButton(
+                      child: Text("Buy"),
+                      onPressed: () {
+                        // we will connect this next (orders)
+                      },
+                    ),
+                  ),
+                );
+              },
             ),
-          ),
-
-          const SizedBox(height: 5),
-        ],
-      ),
     );
   }
 }

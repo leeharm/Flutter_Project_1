@@ -27,7 +27,7 @@ class Dashboard extends StatelessWidget {
 
           dashboardCard(context, "Orders", Icons.shopping_cart, const Order()),
 
-          dashboardCard(context, "Profile", Icons.person, const Profile()),
+          dashboardCard(context, "Profile", Icons.person, Profile()),
         ],
       ),
     );
