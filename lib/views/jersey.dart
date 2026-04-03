@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:get/get.dart';
+import '../controllers/logincontroller.dart';
 
 class Jersey extends StatefulWidget {
   const Jersey({super.key});
@@ -11,26 +12,8 @@ class Jersey extends StatefulWidget {
 }
 
 class _JerseyState extends State<Jersey> {
-  Future placeOrder(item) async {
-    var response = await http.post(
-      Uri.parse("http://127.0.0.1/order.php"),
-      body: {
-        "user_email": "test@gmail.com", // we improve this next
-        "jersey_name": item['name'],
-        "price": item['price'],
-      },
-    );
-
-    if (response.body == "success") {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Order placed successfully")));
-    } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Order failed")));
-    }
-  }
+  //  Get logged-in user
+  final LoginController loginController = Get.find();
 
   List jerseys = [];
 
@@ -40,47 +23,90 @@ class _JerseyState extends State<Jersey> {
     fetchJerseys();
   }
 
-  /// FETCH DATA FROM API
+  /// FETCH JERSEYS FROM DATABASE
   fetchJerseys() async {
-    var response = await http.get(
-      Uri.parse("http://127.0.0.1/jersey/get_jerseys.php"),
-    );
+    try {
+      var response = await http.get(
+        Uri.parse("http://localhost/jersey/get_jerseys.php"),
+      );
 
-    if (response.statusCode == 200) {
-      setState(() {
-        jerseys = json.decode(response.body);
-      });
+      if (response.statusCode == 200) {
+        setState(() {
+          jerseys = json.decode(response.body);
+        });
+      } else {
+        print("Failed to load jerseys");
+      }
+    } catch (e) {
+      print("Error: $e");
+    }
+  }
+
+  /// PLACE ORDER
+  Future placeOrder(item) async {
+    try {
+      print("USER ID: ${loginController.userId.value}");
+
+      var response = await http.post(
+        Uri.parse("http://localhost/order.php"),
+        body: {
+          "user_id": loginController.userId.value.toString(),
+          "jersey_id": item['id'].toString(),
+          "quantity": "1",
+          "total_price": item['price'].toString(),
+        },
+      );
+
+      print(response.body);
+
+      if (response.body == "success") {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Order placed successfully")),
+        );
+      } else {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text("Order failed")));
+      }
+    } catch (e) {
+      print("Error placing order: $e");
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Server error")));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Jerseys")),
+      appBar: AppBar(title: const Text("Jerseys"), centerTitle: true),
 
       body: jerseys.isEmpty
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : ListView.builder(
               itemCount: jerseys.length,
               itemBuilder: (context, index) {
                 var item = jerseys[index];
 
                 return Card(
-                  margin: EdgeInsets.all(10),
+                  margin: const EdgeInsets.all(10),
                   child: ListTile(
                     leading: Image.network(
-                      "http://127.0.0.1/jersey/jersey_images/${item['image']}",
+                      "http://localhost/jersey/jersey_images/${item['image']}",
                       width: 50,
                       height: 50,
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Icon(Icons.image_not_supported);
+                      },
                     ),
 
-                    title: Text(item['team']),
-                    subtitle: Text("Ksh ${item['price']}"),
+                    title: Text(item['team'] ?? "No name"),
+                    subtitle: Text("Ksh ${item['price'] ?? '0'}"),
 
                     trailing: ElevatedButton(
-                      child: Text("Buy"),
+                      child: const Text("Buy"),
                       onPressed: () {
-                        // we will connect this next (orders)
+                        placeOrder(item);
                       },
                     ),
                   ),

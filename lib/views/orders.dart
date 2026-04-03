@@ -1,55 +1,74 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'dart:convert';
 import '../controllers/logincontroller.dart';
 
-//  CREATE CONTROLLER INSTANCE
-LoginController loginController = Get.find();
-
-class Order extends StatelessWidget {
+class Order extends StatefulWidget {
   const Order({super.key});
 
-  Future placeOrder(item) async {
+  @override
+  State<Order> createState() => _OrderState();
+}
+
+class _OrderState extends State<Order> {
+  final LoginController loginController = Get.find();
+
+  List orders = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchOrders();
+  }
+
+  /// FETCH USER ORDERS
+  fetchOrders() async {
     try {
-      var response = await http.post(
-        Uri.parse("http://127.0.0.1/order.php"),
-        body: {
-          "user_id": loginController.userId.value.toString(),
-          "jersey_id": item['id'].toString(),
-          "quantity": "1",
-          "total_price": item['price'].toString(),
-        },
+      print("Fetching orders for user: ${loginController.userId.value}");
+
+      var response = await http.get(
+        Uri.parse(
+          "http://localhost/get_orders.php?user_id=${loginController.userId.value}",
+        ),
       );
 
-      if (response.body == "success") {
-        Get.snackbar("Success", "Order placed successfully");
-      } else {
-        Get.snackbar("Error", "Order failed");
+      if (response.statusCode == 200) {
+        setState(() {
+          orders = json.decode(response.body);
+        });
       }
     } catch (e) {
-      Get.snackbar("Error", "Server error");
+      print("Error: $e");
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Orders"), centerTitle: true),
+      appBar: AppBar(title: const Text("My Orders"), centerTitle: true),
 
-      body: ListView(
-        children: [
-          ListTile(
-            leading: Icon(Icons.shopping_bag),
-            title: Text("Arsenal Jersey"),
-            subtitle: Text("Quantity: 1"),
-            trailing: Text("Ksh 3500"),
-            onTap: () {
-              // TEST ORDER BUTTON
-              placeOrder({"id": 1, "price": 3500});
-            },
-          ),
-        ],
-      ),
+      body: orders.isEmpty
+          ? const Center(child: Text("No orders yet"))
+          : ListView.builder(
+              itemCount: orders.length,
+              itemBuilder: (context, index) {
+                var item = orders[index];
+
+                return Card(
+                  margin: const EdgeInsets.all(10),
+                  child: ListTile(
+                    leading: const Icon(Icons.shopping_bag),
+
+                    title: Text(item['team'] ?? "Unknown Jersey"),
+
+                    subtitle: Text("Quantity: ${item['quantity']}"),
+
+                    trailing: Text("Ksh ${item['total_price']}"),
+                  ),
+                );
+              },
+            ),
     );
   }
 }

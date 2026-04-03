@@ -24,7 +24,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   Future loginUser() async {
     var response = await http.post(
-      Uri.parse("http://127.0.0.1/login.php"),
+      Uri.parse("http://localhost/login.php"),
       body: {
         "email": usernameController.text,
         "password": passwordController.text,
@@ -34,7 +34,14 @@ class _LoginScreenState extends State<LoginScreen> {
     var data = jsonDecode(response.body);
 
     if (data['status'] == "success") {
-      Get.offAndToNamed("/homescreen");
+      //  SAVE USER DATA INTO CONTROLLER
+      loginController.userId.value = int.parse(data['user_id'].toString());
+      loginController.email.value = data['email'];
+
+      print("LOGIN SUCCESS");
+      print("USER ID: ${loginController.userId.value}");
+
+      Get.offAllNamed("/homescreen"); //  use this
     } else {
       Get.snackbar("Login Failed", "Invalid credentials");
     }

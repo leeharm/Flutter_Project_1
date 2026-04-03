@@ -10,36 +10,40 @@ class Profile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Profile"), centerTitle: true),
+      appBar: AppBar(title: const Text("Profile"), centerTitle: true),
 
       body: Center(
         child: Obx(
           () => Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.person, size: 100),
+              const Icon(Icons.person, size: 100),
 
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               Text(
                 "User ID: ${loginController.userId.value}",
-                style: TextStyle(fontSize: 18),
+                style: const TextStyle(fontSize: 18),
               ),
 
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
               Text(
                 "Email: ${loginController.email.value}",
-                style: TextStyle(fontSize: 18),
+                style: const TextStyle(fontSize: 18),
               ),
 
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
 
               ElevatedButton(
                 onPressed: () {
+                  // logout
+                  loginController.userId.value = 0;
+                  loginController.email.value = "";
+
                   Get.offAllNamed("/login");
                 },
-                child: Text("Logout"),
+                child: const Text("Logout"),
               ),
             ],
           ),
