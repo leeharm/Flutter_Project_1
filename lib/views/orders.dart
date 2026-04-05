@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:new_project/configs/colors.dart';
 import 'dart:convert';
 import '../controllers/logincontroller.dart';
 
@@ -15,6 +16,7 @@ class _OrderState extends State<Order> {
   final LoginController loginController = Get.find();
 
   List orders = [];
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -25,8 +27,6 @@ class _OrderState extends State<Order> {
   /// FETCH USER ORDERS
   fetchOrders() async {
     try {
-      print("Fetching orders for user: ${loginController.userId.value}");
-
       var response = await http.get(
         Uri.parse(
           "http://localhost/get_orders.php?user_id=${loginController.userId.value}",
@@ -36,6 +36,7 @@ class _OrderState extends State<Order> {
       if (response.statusCode == 200) {
         setState(() {
           orders = json.decode(response.body);
+          isLoading = false;
         });
       }
     } catch (e) {
@@ -46,25 +47,118 @@ class _OrderState extends State<Order> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("My Orders"), centerTitle: true),
+      appBar: AppBar(
+        title: const Text("My Orders"),
+        centerTitle: true,
+        backgroundColor: primaryColor,
+      ),
 
-      body: orders.isEmpty
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : orders.isEmpty
           ? const Center(child: Text("No orders yet"))
           : ListView.builder(
+              padding: const EdgeInsets.all(10),
               itemCount: orders.length,
               itemBuilder: (context, index) {
                 var item = orders[index];
 
-                return Card(
-                  margin: const EdgeInsets.all(10),
-                  child: ListTile(
-                    leading: const Icon(Icons.shopping_bag),
+                return TweenAnimationBuilder(
+                  duration: Duration(milliseconds: 400 + (index * 100)),
+                  tween: Tween(begin: 0.0, end: 1.0),
+                  builder: (context, value, child) {
+                    return Opacity(
+                      opacity: value,
+                      child: Transform.translate(
+                        offset: Offset(0, 50 * (1 - value)),
+                        child: child,
+                      ),
+                    );
+                  },
 
-                    title: Text(item['team'] ?? "Unknown Jersey"),
+                  /// 🔥 SAME CARD STYLE AS JERSEY PAGE
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    elevation: 6,
+                    margin: const EdgeInsets.symmetric(vertical: 10),
 
-                    subtitle: Text("Quantity: ${item['quantity']}"),
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
 
-                    trailing: Text("Ksh ${item['total_price']}"),
+                      child: Row(
+                        children: [
+                          /// 🖼️ IMAGE
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(15),
+                            child: Image.network(
+                              "http://127.0.0.1/jersey/jersey_images/${item['image']}",
+                              width: 80,
+                              height: 80,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const Icon(Icons.image, size: 80);
+                              },
+                            ),
+                          ),
+
+                          const SizedBox(width: 15),
+
+                          /// 📦 DETAILS
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  item['team'] ?? "Unknown Jersey",
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+
+                                const SizedBox(height: 5),
+
+                                Text(
+                                  "Quantity: ${item['quantity']}",
+                                  style: const TextStyle(color: greyColor),
+                                ),
+
+                                const SizedBox(height: 5),
+
+                                Text(
+                                  "Ksh ${item['total_price']}",
+                                  style: const TextStyle(
+                                    color: primaryColor,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          /// STATUS BADGE
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 5,
+                            ),
+                            decoration: BoxDecoration(
+                              color: primaryColor.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Text(
+                              "Paid",
+                              style: TextStyle(
+                                color: primaryColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 );
               },

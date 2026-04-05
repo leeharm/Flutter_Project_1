@@ -8,7 +8,7 @@ import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'configs/routes.dart';
 
 void main() {
-  Get.put(LoginController(), permanent: true); // ✅ VERY IMPORTANT
+  Get.put(LoginController(), permanent: true); // VERY IMPORTANT
 
   runApp(
     GetMaterialApp(

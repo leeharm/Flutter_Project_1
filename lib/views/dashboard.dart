@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../configs/colors.dart';
 import 'jersey.dart';
 import 'orders.dart';
 import 'profile.dart';
@@ -9,69 +10,47 @@ class Dashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: lightColor,
 
       appBar: AppBar(
+        backgroundColor: lightColor,
         elevation: 0,
-        backgroundColor: Colors.white,
         centerTitle: true,
         title: Image.asset("assets/logo.png", height: 40),
       ),
 
       body: Padding(
-        padding: const EdgeInsets.all(15),
-
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 10),
-
-            /// 🔥 WELCOME TEXT
             const Text(
               "Welcome 👋",
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: darkColor,
+              ),
             ),
 
             const SizedBox(height: 5),
 
             const Text(
-              "Browse and shop your favorite jerseys",
-              style: TextStyle(color: Colors.grey),
+              "Shop premium jerseys",
+              style: TextStyle(color: greyColor),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 25),
 
-            /// 🔥 GRID
             Expanded(
               child: GridView.count(
                 crossAxisCount: 2,
                 crossAxisSpacing: 15,
                 mainAxisSpacing: 15,
-
                 children: [
-                  dashboardCard(
-                    context,
-                    "Jerseys",
-                    Icons.sports_soccer,
-                    Colors.orange,
-                    const Jersey(),
-                  ),
-
-                  dashboardCard(
-                    context,
-                    "Orders",
-                    Icons.shopping_cart,
-                    Colors.green,
-                    const Order(),
-                  ),
-
-                  dashboardCard(
-                    context,
-                    "Profile",
-                    Icons.person,
-                    Colors.blue,
-                    Profile(),
-                  ),
+                  card(context, "Jerseys", Icons.sports_soccer, const Jersey()),
+                  card(context, "Orders", Icons.shopping_cart, const Order()),
+                  card(context, "Profile", Icons.person, Profile()),
                 ],
               ),
             ),
@@ -81,50 +60,31 @@ class Dashboard extends StatelessWidget {
     );
   }
 
-  Widget dashboardCard(
-    BuildContext context,
-    String title,
-    IconData icon,
-    Color color,
-    Widget page,
-  ) {
+  Widget card(context, title, icon, page) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => page));
-      },
-
+      onTap: () =>
+          Navigator.push(context, MaterialPageRoute(builder: (_) => page)),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: lightColor,
           borderRadius: BorderRadius.circular(20),
-
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.shade300,
-              blurRadius: 10,
-              offset: const Offset(0, 5),
-            ),
-          ],
+          boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10)],
         ),
-
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            /// ICON CONTAINER
-            Container(
-              padding: const EdgeInsets.all(15),
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(icon, size: 40, color: color),
+            CircleAvatar(
+              radius: 30,
+              backgroundColor: primaryColor.withOpacity(0.1),
+              child: Icon(icon, color: primaryColor, size: 30),
             ),
-
-            const SizedBox(height: 15),
-
+            const SizedBox(height: 10),
             Text(
               title,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: darkColor,
+              ),
             ),
           ],
         ),

@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:get/get.dart';
+import 'package:new_project/configs/colors.dart';
 import '../controllers/logincontroller.dart';
+
+LoginController loginController = Get.find();
 
 class Jersey extends StatefulWidget {
   const Jersey({super.key});
@@ -12,10 +15,8 @@ class Jersey extends StatefulWidget {
 }
 
 class _JerseyState extends State<Jersey> {
-  //  Get logged-in user
-  final LoginController loginController = Get.find();
-
   List jerseys = [];
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -23,91 +24,144 @@ class _JerseyState extends State<Jersey> {
     fetchJerseys();
   }
 
-  /// FETCH JERSEYS FROM DATABASE
+  /// FETCH JERSEYS
   fetchJerseys() async {
     try {
       var response = await http.get(
-        Uri.parse("http://localhost/jersey/get_jerseys.php"),
+        Uri.parse("http://127.0.0.1/jersey/get_jerseys.php"),
       );
 
       if (response.statusCode == 200) {
         setState(() {
           jerseys = json.decode(response.body);
+          isLoading = false;
         });
-      } else {
-        print("Failed to load jerseys");
       }
     } catch (e) {
-      print("Error: $e");
+      print(e);
     }
   }
 
   /// PLACE ORDER
   Future placeOrder(item) async {
-    try {
-      print("USER ID: ${loginController.userId.value}");
+    var response = await http.post(
+      Uri.parse("http://127.0.0.1/order.php"),
+      body: {
+        "user_id": loginController.userId.value.toString(),
+        "jersey_id": item['id'].toString(),
+        "quantity": "1",
+        "total_price": item['price'].toString(),
+      },
+    );
 
-      var response = await http.post(
-        Uri.parse("http://localhost/order.php"),
-        body: {
-          "user_id": loginController.userId.value.toString(),
-          "jersey_id": item['id'].toString(),
-          "quantity": "1",
-          "total_price": item['price'].toString(),
-        },
-      );
-
-      print(response.body);
-
-      if (response.body == "success") {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Order placed successfully")),
-        );
-      } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text("Order failed")));
-      }
-    } catch (e) {
-      print("Error placing order: $e");
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Server error")));
+    if (response.body == "success") {
+      Get.snackbar("Success", "Order placed successfully");
+    } else {
+      Get.snackbar("Error", "Order failed");
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Jerseys"), centerTitle: true),
+      appBar: AppBar(
+        title: const Text("Jerseys"),
+        centerTitle: true,
+        backgroundColor: primaryColor,
+      ),
 
-      body: jerseys.isEmpty
+      body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : ListView.builder(
+              padding: const EdgeInsets.all(10),
               itemCount: jerseys.length,
               itemBuilder: (context, index) {
                 var item = jerseys[index];
 
-                return Card(
-                  margin: const EdgeInsets.all(10),
-                  child: ListTile(
-                    leading: Image.network(
-                      "http://localhost/jersey/jersey_images/${item['image']}",
-                      width: 50,
-                      height: 50,
-                      errorBuilder: (context, error, stackTrace) {
-                        return const Icon(Icons.image_not_supported);
-                      },
+                /// 🔥 ANIMATED ENTRY
+                return TweenAnimationBuilder(
+                  duration: Duration(milliseconds: 400 + (index * 100)),
+                  tween: Tween(begin: 0.0, end: 1.0),
+                  builder: (context, value, child) {
+                    return Opacity(
+                      opacity: value,
+                      child: Transform.translate(
+                        offset: Offset(0, 50 * (1 - value)),
+                        child: child,
+                      ),
+                    );
+                  },
+
+                  /// 🔥 CARD UI
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
                     ),
+                    elevation: 6,
+                    margin: const EdgeInsets.symmetric(vertical: 10),
 
-                    title: Text(item['team'] ?? "No name"),
-                    subtitle: Text("Ksh ${item['price'] ?? '0'}"),
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
 
-                    trailing: ElevatedButton(
-                      child: const Text("Buy"),
-                      onPressed: () {
-                        placeOrder(item);
-                      },
+                      child: Row(
+                        children: [
+                          /// IMAGE
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(15),
+                            child: Image.network(
+                              "http://127.0.0.1/jersey/jersey_images/${item['image']}",
+                              width: 80,
+                              height: 80,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const Icon(Icons.image, size: 80);
+                              },
+                            ),
+                          ),
+
+                          const SizedBox(width: 15),
+
+                          /// DETAILS
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  item['team'] ?? "No name",
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+
+                                const SizedBox(height: 5),
+
+                                Text(
+                                  "Ksh ${item['price']}",
+                                  style: const TextStyle(
+                                    color: primaryColor,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          /// BUY BUTTON
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: lightColor,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                            ),
+                            child: const Text("Buy"),
+                            onPressed: () {
+                              placeOrder(item);
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 );
