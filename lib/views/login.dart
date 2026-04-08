@@ -41,7 +41,7 @@ class _LoginScreenState extends State<LoginScreen> {
       print("LOGIN SUCCESS");
       print("USER ID: ${loginController.userId.value}");
 
-      Get.offAllNamed("/homescreen"); //  use this
+      Get.offAllNamed("/homescreen");
     } else {
       Get.snackbar("Login Failed", "Invalid credentials");
     }

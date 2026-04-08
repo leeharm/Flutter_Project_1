@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:new_project/configs/colors.dart';
 import '../controllers/logincontroller.dart';
 
 class Profile extends StatelessWidget {
@@ -10,7 +11,11 @@ class Profile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Profile"), centerTitle: true),
+      appBar: AppBar(
+        title: const Text("Profile"),
+        centerTitle: true,
+        backgroundColor: primaryColor,
+      ),
 
       body: Center(
         child: Obx(

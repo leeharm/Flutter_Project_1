@@ -78,7 +78,7 @@ class _JerseyState extends State<Jersey> {
               itemBuilder: (context, index) {
                 var item = jerseys[index];
 
-                /// 🔥 ANIMATED ENTRY
+                ///  ANIMATED ENTRY
                 return TweenAnimationBuilder(
                   duration: Duration(milliseconds: 400 + (index * 100)),
                   tween: Tween(begin: 0.0, end: 1.0),
@@ -92,7 +92,7 @@ class _JerseyState extends State<Jersey> {
                     );
                   },
 
-                  /// 🔥 CARD UI
+                  /// CARD UI
                   child: Card(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),

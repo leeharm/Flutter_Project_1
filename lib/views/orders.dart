@@ -76,7 +76,7 @@ class _OrderState extends State<Order> {
                     );
                   },
 
-                  /// 🔥 SAME CARD STYLE AS JERSEY PAGE
+                  /// CARD STYLE
                   child: Card(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
@@ -89,7 +89,7 @@ class _OrderState extends State<Order> {
 
                       child: Row(
                         children: [
-                          /// 🖼️ IMAGE
+                          /// IMAGE
                           ClipRRect(
                             borderRadius: BorderRadius.circular(15),
                             child: Image.network(
@@ -105,7 +105,7 @@ class _OrderState extends State<Order> {
 
                           const SizedBox(width: 15),
 
-                          /// 📦 DETAILS
+                          /// DETAILS
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
