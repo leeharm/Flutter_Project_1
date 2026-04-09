@@ -44,9 +44,45 @@ class _OrderState extends State<Order> {
     }
   }
 
+  /// ✅ DELETE ORDER
+  Future deleteOrder(String orderId, int index) async {
+    var response = await http.post(
+      Uri.parse("http://localhost/delete_order.php"),
+      body: {"order_id": orderId},
+    );
+
+    if (response.body == "success") {
+      setState(() {
+        orders.removeAt(index); // 🔥 remove instantly
+      });
+
+      Get.snackbar("Removed", "Order deleted successfully");
+    } else {
+      Get.snackbar("Error", "Failed to delete order");
+    }
+  }
+
+  /// CONFIRM DELETE
+  void confirmDelete(String orderId, int index) {
+    Get.defaultDialog(
+      title: "Remove Order",
+      middleText: "Are you sure you want to remove this order?",
+      textConfirm: "Yes",
+      textCancel: "No",
+      confirmTextColor: lightColor,
+      buttonColor: primaryColor,
+      onConfirm: () {
+        Get.back();
+        deleteOrder(orderId, index);
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: lightColor,
+
       appBar: AppBar(
         title: const Text("My Orders"),
         centerTitle: true,
@@ -76,7 +112,7 @@ class _OrderState extends State<Order> {
                     );
                   },
 
-                  /// CARD STYLE
+                  /// 🔥 CARD STYLE
                   child: Card(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
@@ -138,23 +174,48 @@ class _OrderState extends State<Order> {
                             ),
                           ),
 
-                          /// STATUS BADGE
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 5,
-                            ),
-                            decoration: BoxDecoration(
-                              color: primaryColor.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: const Text(
-                              "Paid",
-                              style: TextStyle(
-                                color: primaryColor,
-                                fontWeight: FontWeight.bold,
+                          /// 🔥 ACTIONS COLUMN
+                          Column(
+                            children: [
+                              /// STATUS
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 5,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: primaryColor.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: const Text(
+                                  "Paid",
+                                  style: TextStyle(
+                                    color: primaryColor,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                               ),
-                            ),
+
+                              const SizedBox(height: 10),
+
+                              /// DELETE BUTTON
+                              GestureDetector(
+                                onTap: () =>
+                                    confirmDelete(item['id'].toString(), index),
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.red.withOpacity(0.1),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.delete,
+                                    color: Colors.red,
+                                    size: 20,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),

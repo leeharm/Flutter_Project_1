@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:new_project/configs/colors.dart';
+import 'package:new_project/views/fullimageview.dart';
 import '../controllers/logincontroller.dart';
 
 LoginController loginController = Get.find();
@@ -106,16 +107,29 @@ class _JerseyState extends State<Jersey> {
                       child: Row(
                         children: [
                           /// IMAGE
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(15),
-                            child: Image.network(
-                              "http://127.0.0.1/jersey/jersey_images/${item['image']}",
-                              width: 80,
-                              height: 80,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return const Icon(Icons.image, size: 80);
-                              },
+                          GestureDetector(
+                            onTap: () {
+                              Get.to(
+                                () => FullImageView(
+                                  imageUrl:
+                                      "http://127.0.0.1/jersey/jersey_images/${item['image']}",
+                                ),
+                              );
+                            },
+                            child: Hero(
+                              tag: item['image'],
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(15),
+                                child: Image.network(
+                                  "http://127.0.0.1/jersey/jersey_images/${item['image']}",
+                                  width: 80,
+                                  height: 80,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return const Icon(Icons.image, size: 80);
+                                  },
+                                ),
+                              ),
                             ),
                           ),
 
