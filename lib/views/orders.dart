@@ -44,7 +44,7 @@ class _OrderState extends State<Order> {
     }
   }
 
-  /// ✅ DELETE ORDER
+  /// DELETE ORDER
   Future deleteOrder(String orderId, int index) async {
     var response = await http.post(
       Uri.parse("http://localhost/delete_order.php"),
@@ -53,7 +53,7 @@ class _OrderState extends State<Order> {
 
     if (response.body == "success") {
       setState(() {
-        orders.removeAt(index); // 🔥 remove instantly
+        orders.removeAt(index); //  remove instantly
       });
 
       Get.snackbar("Removed", "Order deleted successfully");
@@ -112,7 +112,7 @@ class _OrderState extends State<Order> {
                     );
                   },
 
-                  /// 🔥 CARD STYLE
+                  ///  CARD STYLE
                   child: Card(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
@@ -174,7 +174,7 @@ class _OrderState extends State<Order> {
                             ),
                           ),
 
-                          /// 🔥 ACTIONS COLUMN
+                          ///  ACTIONS COLUMN
                           Column(
                             children: [
                               /// STATUS
