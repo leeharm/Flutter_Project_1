@@ -25,7 +25,7 @@ class _JerseyState extends State<Jersey> {
     fetchJerseys();
   }
 
-  /// FETCH JERSEYS
+  //// FETCH JERSEYS
   fetchJerseys() async {
     try {
       var response = await http.get(
@@ -43,7 +43,7 @@ class _JerseyState extends State<Jersey> {
     }
   }
 
-  /// PLACE ORDER
+  //// PLACE ORDER
   Future placeOrder(item) async {
     var response = await http.post(
       Uri.parse("http://127.0.0.1/order.php"),
@@ -79,7 +79,7 @@ class _JerseyState extends State<Jersey> {
               itemBuilder: (context, index) {
                 var item = jerseys[index];
 
-                ///  ANIMATED ENTRY
+                ////  ANIMATED ENTRY
                 return TweenAnimationBuilder(
                   duration: Duration(milliseconds: 400 + (index * 100)),
                   tween: Tween(begin: 0.0, end: 1.0),
@@ -93,7 +93,7 @@ class _JerseyState extends State<Jersey> {
                     );
                   },
 
-                  /// CARD UI
+                  //// CARD UI
                   child: Card(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
@@ -106,7 +106,7 @@ class _JerseyState extends State<Jersey> {
 
                       child: Row(
                         children: [
-                          /// IMAGE
+                          //// IMAGE
                           GestureDetector(
                             onTap: () {
                               Get.to(
@@ -135,7 +135,7 @@ class _JerseyState extends State<Jersey> {
 
                           const SizedBox(width: 15),
 
-                          /// DETAILS
+                          //// DETAILS
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -161,7 +161,7 @@ class _JerseyState extends State<Jersey> {
                             ),
                           ),
 
-                          /// BUY BUTTON
+                          //// BUY BUTTON
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               backgroundColor: lightColor,

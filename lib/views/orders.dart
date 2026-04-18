@@ -24,7 +24,7 @@ class _OrderState extends State<Order> {
     fetchOrders();
   }
 
-  /// FETCH USER ORDERS
+  //// FETCH USER ORDERS
   fetchOrders() async {
     try {
       var response = await http.get(
@@ -44,7 +44,7 @@ class _OrderState extends State<Order> {
     }
   }
 
-  /// DELETE ORDER
+  //// DELETE ORDER
   Future deleteOrder(String orderId, int index) async {
     var response = await http.post(
       Uri.parse("http://localhost/delete_order.php"),
@@ -62,7 +62,7 @@ class _OrderState extends State<Order> {
     }
   }
 
-  /// CONFIRM DELETE
+  //// CONFIRM DELETE
   void confirmDelete(String orderId, int index) {
     Get.defaultDialog(
       title: "Remove Order",
@@ -112,7 +112,7 @@ class _OrderState extends State<Order> {
                     );
                   },
 
-                  ///  CARD STYLE
+                  ////  CARD STYLE
                   child: Card(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
@@ -125,7 +125,7 @@ class _OrderState extends State<Order> {
 
                       child: Row(
                         children: [
-                          /// IMAGE
+                          //// IMAGE
                           ClipRRect(
                             borderRadius: BorderRadius.circular(15),
                             child: Image.network(
@@ -141,7 +141,7 @@ class _OrderState extends State<Order> {
 
                           const SizedBox(width: 15),
 
-                          /// DETAILS
+                          //// DETAILS
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -174,10 +174,10 @@ class _OrderState extends State<Order> {
                             ),
                           ),
 
-                          ///  ACTIONS COLUMN
+                          ////  ACTIONS COLUMN
                           Column(
                             children: [
-                              /// STATUS
+                              //// STATUS
                               Container(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 10,
@@ -198,7 +198,7 @@ class _OrderState extends State<Order> {
 
                               const SizedBox(height: 10),
 
-                              /// DELETE BUTTON
+                              //// DELETE BUTTON
                               GestureDetector(
                                 onTap: () =>
                                     confirmDelete(item['id'].toString(), index),
