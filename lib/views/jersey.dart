@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:new_project/configs/colors.dart';
 import 'package:new_project/views/fullimageview.dart';
+import 'package:new_project/views/mpesa_payment.dart';
 import '../controllers/logincontroller.dart';
 
 LoginController loginController = Get.find();
@@ -171,7 +172,7 @@ class _JerseyState extends State<Jersey> {
                             ),
                             child: const Text("Buy"),
                             onPressed: () {
-                              placeOrder(item);
+                              Get.to(() => MpesaPaymentPage(item: item));
                             },
                           ),
                         ],
